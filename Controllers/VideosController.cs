@@ -1,5 +1,6 @@
 using ChallengeAluraBackEnd.Data;
 using ChallengeAluraBackEnd.Models;
+using ChallengeAluraBackEnd.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,7 +11,7 @@ namespace ChallengeAluraBackEnd.Controllers
     public class VideosController : ControllerBase
     {
         private readonly VideoContext _context;
-
+        //private ValidarVideo _validar;
         public VideosController(VideoContext context)
         {
             _context = context;
@@ -34,6 +35,7 @@ namespace ChallengeAluraBackEnd.Controllers
         [HttpPost]
         public async Task<IActionResult> CadastrarVideo(Video novoVideo)
         {
+            ValidarVideo.validar(novoVideo);
             _context.Videos.Add(novoVideo);
             await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(RecuperarVideoPorId), new {id = novoVideo.Id}, novoVideo);
@@ -41,7 +43,9 @@ namespace ChallengeAluraBackEnd.Controllers
 
         [HttpPut("{id}")]
         public async Task<IActionResult> AtualizarVideo(int id, Video novoVideo)
-        {
+        {   
+            ValidarVideo.validar(novoVideo);
+            
             var video = await _context.Videos.SingleOrDefaultAsync(v => v.Id == id);
             if(video is null)
                 return NotFound();
